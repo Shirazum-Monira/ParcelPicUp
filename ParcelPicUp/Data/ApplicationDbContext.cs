@@ -10,5 +10,6 @@ namespace parcelPicUp.Data
             : base(options)
         {
         }
+        public DbSet<parcelPicUp.Models.Parcel> Parcel { get; set; } = default!;
     }
 }
