@@ -1,22 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ParcelPicUp.Models;
 using parcelPicUp.Data;
+using ParcelPicUp.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ParcelPicUp.Controllers
 {
     public class ContactConfigsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public ContactConfigsController(ApplicationDbContext context)
+
+        public ContactConfigsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: ContactConfigs
@@ -26,18 +30,13 @@ namespace ParcelPicUp.Controllers
         }
 
         // GET: ContactConfigs/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var contactConfig = await _context.ContactConfig
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync();
             if (contactConfig == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Create));
             }
 
             return View(contactConfig);
@@ -54,13 +53,20 @@ namespace ParcelPicUp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FormName,FormEmail,FormEmailPassword,ToName,ToEmail,SMTPHost,SMTPPort,IsActive,CTime,CreatedBy,MTime,ModifiedBy")] ContactConfig contactConfig)
+        public async Task<IActionResult> Create([Bind("Id,FormName,FormEmail,FormEmailPassword,ToName,ToEmail,SMTPHost,SMTPPort")] ContactConfig contactConfig)
         {
             if (ModelState.IsValid)
             {
+                var id = _userManager.GetUserId(User);
+                contactConfig.IsActive = true;
+                contactConfig.CTime = DateTime.Now;
+                contactConfig.CreatedBy = id;
+                contactConfig.MTime = DateTime.Now;
+                contactConfig.ModifiedBy = id;
+
                 _context.Add(contactConfig);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details));
             }
             return View(contactConfig);
         }
@@ -86,7 +92,7 @@ namespace ParcelPicUp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FormName,FormEmail,FormEmailPassword,ToName,ToEmail,SMTPHost,SMTPPort,IsActive,CTime,CreatedBy,MTime,ModifiedBy")] ContactConfig contactConfig)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FormName,FormEmail,FormEmailPassword,ToName,ToEmail,SMTPHost,SMTPPort")] ContactConfig contactConfig)
         {
             if (id != contactConfig.Id)
             {
@@ -111,7 +117,7 @@ namespace ParcelPicUp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details));
             }
             return View(contactConfig);
         }

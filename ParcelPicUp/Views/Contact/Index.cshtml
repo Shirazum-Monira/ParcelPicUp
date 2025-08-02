@@ -1,0 +1,126 @@
+﻿@model ParcelPicUp.Controllers.ContactController.PContact
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<div class="sec-height contact_padding section-1 contact-section">
+    <div class="container">
+        <div style="text-align:center; width: 100%">
+            <h2 class="text-white">Contact us</h2>
+        </div>
+
+        <div class="row" style="padding: 2em;">
+            <!-- Map Column -->
+            <div class="col-lg-8 mb-4">
+                <!-- Embedded Google Map -->
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3650.5698657201265!2d90.42216161029633!3d23.798326678548687!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c74245b7df47%3A0xfc8e97c08c64d4d1!2sExcel%20HR%20Tower!5e0!3m2!1sen!2sbd!4v1754127293849!5m2!1sen!2sbd" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                
+            </div>
+            <!-- Contact Details Column -->
+            <div class="col-lg-4 mb-4 text-white contact_find_Us">
+                <h3>Find us at</h3>
+                <address>
+                    Excel HR Tower, Level - 03,<br />
+                    House - 16, Road - 02,<br />
+                    Block - J, Baridhara, Dhaka-1212<br />
+                </address>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="section-2">
+    <div class="row container m-auto text-white" style="padding: 2em;">
+        <div class="col-lg-6 mb-4">
+            <h3>Or leave us a message.</h3>
+            
+            <p>You can also follow us in social media.</p>
+            
+        </div>
+
+        <div class="col-lg-6 mb-4">
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Success"]
+                </div>
+            }
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <form class="box-contact" asp-action="Send" asp-controller="Contact" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label asp-for="Name"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label asp-for="Email"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label asp-for="Subject"></label>
+                        <input asp-for="Subject" class="form-control" />
+                        <span asp-validation-for="Subject" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label asp-for="Message"></label>
+                        <textarea asp-for="Message" class="form-control" rows="10"></textarea>
+                        <span asp-validation-for="Message" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group text-center">
+                    <input type="submit" value="Send Message" class="btn btn-dark text-white button-nav" />
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<style>
+    .contact_find_Us {
+        padding: 12vh;
+    }
+
+    .contact_padding {
+        padding-top: 15vh;
+    }
+
+    .box-contact {
+        margin: 10px;
+        background: #0a0a0a82;
+        padding: 54px;
+    }
+
+    .form-control {
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        background: transparent;
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
